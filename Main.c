@@ -22,7 +22,6 @@ int type;
 const Login default_login = {.username = "", .password = ""};
 
 char string[20];
-
 int crypt(char string[20]){
     int c = 0;
     while(c < strlen(string)){
