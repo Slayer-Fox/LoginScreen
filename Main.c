@@ -70,9 +70,6 @@ void entrar() {
                     if (strcmp(inputuser.password, fileuser.password) == 0) {
                         success = 1;
                         break;
-                    } else {
-                        printf("Falha no login.\n");
-                        wait(2);
                     }
                 }
             }
