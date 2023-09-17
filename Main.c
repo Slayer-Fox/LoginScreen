@@ -63,9 +63,9 @@ void entrar() {
                 wait(2);
             }
             int success = 0;
+            crypt(inputuser.username);
+            crypt(inputuser.password);
             while (fscanf(db, "%s", &fileuser) != EOF) {
-                crypt(inputuser.username);
-                crypt(inputuser.password);
                 if (strcmp(inputuser.username, fileuser.username) == 0) {
                     if (strcmp(inputuser.password, fileuser.password) == 0) {
                         success = 1;
@@ -97,11 +97,12 @@ void entrar() {
 }
 
 void cadastrar() {
+    Login inputuser = default_login;
+    Login fileuser = default_login;
+
     FILE *db;
     db = fopen("db.txt", "a+");
-    int success = 0;
-    int repeat = 0;
-    int broke = 0;
+    int valid = 1;
     printf("Digite o nome de usuario desejado. Limite de 15 caracteres.\n");
     scanf("%s", &inputuser.username);
     crypt(inputuser.username);
@@ -114,7 +115,6 @@ void cadastrar() {
         while (strcmp(inputuser.username, fileuser.username) == 0) {
             printf(
                 "Ja existe uma conta com esse nome de usuario, tente outro.");
-            repeat++;
             wait(2);
             return;
         }
@@ -137,10 +137,17 @@ void cadastrar() {
                 "Atribua uma funcao a conta.\n[1] Gerencia\n[2] "
                 "Funcionario\n[3] Cliente\n");
             scanf("%s", &inputuser.type);
-            //
-            // Make a limiter
-            //
-            if (repeat == 0) {
+            if (inputuser.type[0] == '1')
+                valid = 1;
+            else if (inputuser.type[0] == '2')
+                valid = 2;
+            else if (inputuser.type[0] == '3')
+                valid = 3;
+            else {
+                printf("Opcao invalida, tente novamente.");
+                valid = 0;
+            }
+            if (valid != 0) {
                 int erro = (fwrite(&inputuser, sizeof(Login), 1, db) &&
                             fwrite("\n", sizeof(char), 1, db));
                 if (erro != 0)
