@@ -49,48 +49,49 @@ void entrar() {
     if (strlen(inputuser.username) > 15) {
         printf("Usuario excede o limite de caracteres.\n");
         wait(2);
-    } else {
-        printf("Digite a senha.\n");
-        scanf("%s", &inputuser.password);
-        if (strlen(inputuser.password) > 15) {
-            printf("Senha excede o limite de caracteres.\n");
-            wait(2);
-        } else {
-            FILE *db;
-            db = fopen("db", "r+");
-            if (db == NULL) {
-                printf("Nao existem usuarios cadastrados.\n");
-                wait(2);
+        return;
+    }
+    printf("Digite a senha.\n");
+    scanf("%s", &inputuser.password);
+    if (strlen(inputuser.password) > 15) {
+        printf("Senha excede o limite de caracteres.\n");
+        wait(2);
+        return;
+    }
+    FILE *db;
+    db = fopen("db", "r+");
+    if (db == NULL) {
+        printf("Nao foi possivel encontrar o banco de dados.\n");
+        wait(2);
+        db = fopen("db", "a");
+        return;
+    }
+    int success = 0;
+    encrypt(inputuser.username);
+    encrypt(inputuser.password);
+    while (fscanf(db, "%s", &fileuser) != EOF) {
+        if (strcmp(inputuser.username, fileuser.username) == 0) {
+            if (strcmp(inputuser.password, fileuser.password) == 0) {
+                success = 1;
+                break;
             }
-            int success = 0;
-            encrypt(inputuser.username);
-            encrypt(inputuser.password);
-            while (fscanf(db, "%s", &fileuser) != EOF) {
-                if (strcmp(inputuser.username, fileuser.username) == 0) {
-                    if (strcmp(inputuser.password, fileuser.password) == 0) {
-                        success = 1;
-                        break;
-                    }
-                }
-            }
-            if (success == 1) {
-                encrypt(fileuser.name);
-                printf("Bem vindo(a), %s\n", fileuser.name);
-                wait(2);
-
-                /*
-
-                IMPLEMENTAÇÃO DO PROGRAMA
-
-                */
-
-            } else if (success == 0) {
-                printf("Falha no login.\n");
-            } else
-                printf("Falha no sistema.\n");
-            wait(2);
         }
     }
+    if (success == 1) {
+        encrypt(fileuser.name);
+        printf("Bem vindo(a), %s\n", fileuser.name);
+        wait(2);
+
+        /*
+
+        IMPLEMENTAÇÃO DO PROGRAMA
+
+        */
+
+    } else if (success == 0) {
+        printf("Falha no login.\n");
+    }
+    wait(2);
 }
 
 void cadastrar() {
@@ -110,8 +111,7 @@ void cadastrar() {
     }
     while (fscanf(db, "%s", &fileuser) != EOF) {
         while (strcmp(inputuser.username, fileuser.username) == 0) {
-            printf(
-                "Ja existe uma conta com esse nome de usuario, tente outro.");
+            printf("Ja existe uma conta com esse nome de usuario.\n");
             wait(2);
             return;
         }
@@ -122,41 +122,40 @@ void cadastrar() {
     if (strlen(inputuser.password) > 15) {
         printf("Senha excede o limite de caracteres.\n");
         wait(2);
-    } else {
-        printf("Digite um nome para esta conta. Limite de 15 caracteres.\n");
-        scanf("%s", &inputuser.name);
-        encrypt(inputuser.name);
-        if (strlen(inputuser.name) > 15) {
-            printf("Nome excede o limite de caracteres.\n");
-            wait(2);
-        } else {
-            printf(
-                "Atribua uma funcao a conta.\n[1] Gerencia\n[2] "
-                "Funcionario\n[3] Cliente\n");
-            scanf("%s", &inputuser.type);
-            if (inputuser.type[0] == '1')
-                valid = 1;
-            else if (inputuser.type[0] == '2')
-                valid = 2;
-            else if (inputuser.type[0] == '3')
-                valid = 3;
-            else {
-                printf("Opcao invalida, tente novamente.");
-                valid = 0;
-            }
-            if (valid != 0) {
-                int erro = (fwrite(&inputuser, sizeof(Login), 1, db) &&
-                            fwrite("\n", sizeof(char), 1, db));
-                if (erro != 0)
-                    printf("Salvo com sucesso!\n");
-                else
-                    printf("Erro no salvamento, tente novamente.\n");
-            }
-        }
+        return;
+    }
+    printf("Digite um nome para esta conta. Limite de 15 caracteres.\n");
+    scanf("%s", &inputuser.name);
+    encrypt(inputuser.name);
+    if (strlen(inputuser.name) > 15) {
+        printf("Nome excede o limite de caracteres.\n");
+        wait(2);
+        return;
+    }
+    printf(
+        "Atribua uma funcao a conta.\n[1] Gerencia\n"
+        "[2] Funcionario\n[3] Cliente\n");
+    scanf("%s", &inputuser.type);
+    if (inputuser.type[0] == '1')
+        valid = 1;
+    else if (inputuser.type[0] == '2')
+        valid = 2;
+    else if (inputuser.type[0] == '3')
+        valid = 3;
+    else {
+        printf("Opcao invalida, tente novamente.\n");
+        valid = 0;
+    }
+    if (valid != 0) {
+        int erro = (fwrite(&inputuser, sizeof(Login), 1, db) &&
+                    fwrite("\n", sizeof(char), 1, db));
+        if (erro != 0)
+            printf("Salvo com sucesso!\n");
+        else
+            printf("Erro no salvamento, tente novamente.\n");
     }
     fclose(db);
     wait(2);
-    return;
 }
 
 int main() {
