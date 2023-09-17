@@ -1,0 +1,6 @@
+#comments most be in they own line
+#/db #comments = wrong
+#don't git the db
+/db
+#don't git the executable
+/main
