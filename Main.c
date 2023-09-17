@@ -24,7 +24,7 @@ const Login default_login = {.username = "", .password = ""};
 Login inputuser = default_login;
 Login fileuser = default_login;
 
-int crypt(char string[20]) {
+void encrypt(char string[20]) {
     int c = 0;
     while (c < strlen(string)) {
         if ('a' <= string[c] && string[c] <= 'm')
@@ -57,14 +57,14 @@ void entrar() {
             wait(2);
         } else {
             FILE *db;
-            db = fopen("db.txt", "r+");
+            db = fopen("db", "r+");
             if (db == NULL) {
                 printf("Nao existem usuarios cadastrados.\n");
                 wait(2);
             }
             int success = 0;
-            crypt(inputuser.username);
-            crypt(inputuser.password);
+            encrypt(inputuser.username);
+            encrypt(inputuser.password);
             while (fscanf(db, "%s", &fileuser) != EOF) {
                 if (strcmp(inputuser.username, fileuser.username) == 0) {
                     if (strcmp(inputuser.password, fileuser.password) == 0) {
@@ -77,7 +77,7 @@ void entrar() {
                 }
             }
             if (success == 1) {
-                crypt(fileuser.name);
+                encrypt(fileuser.name);
                 printf("Bem vindo(a), %s\n", fileuser.name);
                 wait(2);
 
@@ -101,11 +101,11 @@ void cadastrar() {
     Login fileuser = default_login;
 
     FILE *db;
-    db = fopen("db.txt", "a+");
+    db = fopen("db", "a+");
     int valid = 1;
     printf("Digite o nome de usuario desejado. Limite de 15 caracteres.\n");
     scanf("%s", &inputuser.username);
-    crypt(inputuser.username);
+    encrypt(inputuser.username);
     if (strlen(inputuser.username) > 15) {
         printf("Usuario excede o limite de caracteres.\n");
         wait(2);
@@ -121,14 +121,14 @@ void cadastrar() {
     }
     printf("Digite a senha desejada. Limite de 15 caracteres.\n");
     scanf("%s", &inputuser.password);
-    crypt(inputuser.password);
+    encrypt(inputuser.password);
     if (strlen(inputuser.password) > 15) {
         printf("Senha excede o limite de caracteres.\n");
         wait(2);
     } else {
         printf("Digite um nome para esta conta. Limite de 15 caracteres.\n");
         scanf("%s", &inputuser.name);
-        crypt(inputuser.name);
+        encrypt(inputuser.name);
         if (strlen(inputuser.name) > 15) {
             printf("Nome excede o limite de caracteres.\n");
             wait(2);
@@ -164,7 +164,7 @@ void cadastrar() {
 
 int main() {
     FILE *db;
-    fopen("db.txt", "a");
+    fopen("db", "a");
     while (1) {
         wipe;
         printf("Digite uma opcao\n1 - Login\n2 - Cadastro\n3 - Fechar\n");
