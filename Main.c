@@ -4,7 +4,6 @@
 #ifdef _WIN32
 #include <conio.h>
 #include <windows.h>
-#define getchar() getch()
 #define wait(t) Sleep(t * 1000)
 #define wipe system("cls")
 #elif unix
